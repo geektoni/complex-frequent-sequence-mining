@@ -7,7 +7,8 @@ class SequenceItem():
     """
     Initialize the object
     """
-    def __init__(self):
+    def __init__(self, value):
+        self.value = value
         pass
 
     """
@@ -22,4 +23,10 @@ class SequenceItem():
     two elements of a sequence.
     """
     def compare(self, object) -> bool:
-        pass
+        return object.value == self.value
+
+    """
+    String representation of this item
+    """
+    def __str__(self):
+        return str(self.value)
