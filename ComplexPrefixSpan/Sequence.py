@@ -2,12 +2,35 @@
 Class which represents the sequence of items which will be stored
 in the database
 """
+from ComplexPrefixSpan.SequenceItem import SequenceItem
+
+
 class Sequence():
 
     def __init__(self, item_list):
         self.sequence = item_list
         self.length = len(self.sequence)
         self.index = 0
+
+    """
+    Append an element to the current sequence
+    """
+    def append(self, item):
+        assert isinstance(item, SequenceItem)
+        self.sequence.append(item)
+
+    """
+    Return a copy of the Sequence
+    """
+    def copy(self):
+        return Sequence(self.sequence.copy())
+
+    """
+    Return the suffix of this sequence removing its first m elements
+    """
+    def suffix(self, m):
+        assert m < self.length and m > 0
+        return Sequence(self.sequence[m:])
 
     """
     Check if this sequence contains a given item(s)
@@ -81,3 +104,7 @@ class Sequence():
     """
     def __str__(self):
         return "".join(list(map(lambda x : str(x), self.sequence)))
+
+    def __repr__(self):
+        return "".join(list(map(lambda x: str(x), self.sequence)))
+
