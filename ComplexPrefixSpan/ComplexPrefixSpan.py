@@ -14,7 +14,7 @@ class ComplexPrefixSpan:
         pass
 
     def compute_frequent_complex_patterns(self, min_support, k) -> list:
-        return self._compute_frequent_patterns(min_support, k, self.database, None)
+        return self._compute_frequent_patterns(min_support, k, self.database, Sequence([]))
 
     """
     Computes the k-frequent sequential patterns given the min support
@@ -28,7 +28,7 @@ class ComplexPrefixSpan:
         # If k is less/equal than zero then we return an empty list,
         # since we reached the longest sequence size
         if k <= 0:
-            return previous_frequent_item
+            return []
 
         one_frequent = self.one_length_seq_patterns(min_support, database)
 
@@ -36,10 +36,9 @@ class ComplexPrefixSpan:
         # first run of the algorithm. Otherwise, create the new sets of newly
         # frequent items such to do projection.
         frequent_items = []
-        if previous_frequent_item == None:
+        if previous_frequent_item == Sequence([]):
             for i, e in one_frequent.items():
                 frequent_items.append(Sequence([e[1]]))
-                frequent_sequences.append(Sequence([e[1]]))
         else:
             for i, e in one_frequent.items():
                 tmp = previous_frequent_item.copy()
@@ -49,18 +48,35 @@ class ComplexPrefixSpan:
         # For each one-frequent patterns, we start mining recursively
         # all the others starting with it
         for e in frequent_items:
-            projected_database_over_k = self.project_database(e, database)
+            projected_database_over_k = self.project_database(e, self.database)
+
+            # This means that the "frequent sequence" we are looking at
+            # actually does not exists inside the database, therefore we will
+            # not add it to the list of frequent sequence
+            if projected_database_over_k != None:
+                frequent_sequences += [e]
+            else:
+                continue
+
             result = self._compute_frequent_patterns(min_support, k-1, projected_database_over_k, e)
-            if (len(result) > 0):
-                frequent_sequences += [result]
+            frequent_sequences += result
         return frequent_sequences
 
     """
     Returns the projected database for a given suffix.
     """
     def project_database(self, suffix, database) -> list:
-        result = list(filter(lambda x: x.starts_with(suffix), database))
-        return list(map(lambda x: x.suffix(len(suffix)), result))
+
+        # Consider only the sequences which have the suffix inside them
+        result = list(filter(lambda x: suffix in x, database))
+
+        # If the list is empty, this means that the suffix does
+        # not exists inside the database
+        if len(result) == 0:
+            return None
+
+        # Return the projected database over the suffix
+        return list(map(lambda x: x.suffix(suffix), result))
 
     """
     Compute the length-1 sequential patterns with support greater than k

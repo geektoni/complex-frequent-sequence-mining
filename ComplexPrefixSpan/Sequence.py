@@ -18,6 +18,7 @@ class Sequence():
     def append(self, item):
         assert isinstance(item, SequenceItem)
         self.sequence.append(item)
+        self.length += 1
 
     """
     Return a copy of the Sequence
@@ -28,9 +29,27 @@ class Sequence():
     """
     Return the suffix of this sequence removing its first m elements
     """
-    def suffix(self, m):
-        assert m < self.length and m > 0
-        return Sequence(self.sequence[m:])
+    def suffix(self, otherSequence):
+        total_suffixes = []
+        # Start to scan the list until we find the starting
+        # symbol of otherSequence
+        suffix_found = False
+        for i in range(0, self.length):
+            if self.sequence[i].compare(otherSequence[0]):
+                suffix_found = True
+                # If we found it, check that we have enough
+                # space for the otherSequence.
+                if self.length-(i+1) < len(otherSequence)-1:
+                    return Sequence([])
+                # Check that all the successive symbols are
+                # actually equals, otherwise return false
+                for j in range(0, len(otherSequence)):
+                    if not self.sequence[i+j].compare(otherSequence[j]):
+                        suffix_found = False
+                        break
+                if suffix_found:
+                    return Sequence(self.sequence[i+len(otherSequence):])
+        return Sequence([])
 
     """
     Check if this sequence contains a given item(s)
@@ -47,7 +66,7 @@ class Sequence():
     def starts_with(self, otherSequence) -> bool:
 
         # If the other sequence is bigger return directly false
-        if len(otherSequence) > self.length:
+        if len(otherSequence) > self.length or len(otherSequence) == 0:
             return False
 
         # Check all the elements
@@ -57,6 +76,53 @@ class Sequence():
 
         return True
 
+    """
+    Check if this contains another sequence
+    """
+    def __contains__(self, otherSequence) -> bool:
+
+        # If the other sequence is bigger return False
+        if self.length < len(otherSequence) or len(otherSequence) == 0:
+            return False
+
+        # If they have the same length then do it item by item
+        if self.length == len(otherSequence):
+            for i in range(0, self.length):
+                if not self.sequence[i].compare(otherSequence[i]):
+                    return False
+            return True
+
+        # Start to scan the list until we find the starting
+        # symbol of otherSequence
+        status_found = False
+        for i in range(0, self.length):
+            if self.sequence[i].compare(otherSequence[0]):
+                status_found = True
+                # If we found it, check that we have enough
+                # space for the otherSequence.
+                if self.length-(i+1) < len(otherSequence)-1:
+                    return False
+                # Check that all the successive symbols are
+                # actually equals, otherwise return false
+                for j in range(1, len(otherSequence)):
+                    if not self.sequence[i+j].compare(otherSequence[j]):
+                        status_found = False
+                        break
+                if status_found:
+                    return True
+        return status_found
+
+
+    def __eq__(self, other):
+        assert(isinstance(other, Sequence))
+
+        if self.length != len(other):
+            return False
+
+        for i in range(0, self.length):
+            if not self.sequence[i].compare(other[i]):
+                return False
+        return True
 
     """
     Remove an item from the sequence
@@ -71,7 +137,7 @@ class Sequence():
         return self.sequence[key]
 
     """
-    Return an item from the sequence
+    Append an item from the sequence
     """
     def __setitem__(self, key, value):
         self.sequence[key] = value
