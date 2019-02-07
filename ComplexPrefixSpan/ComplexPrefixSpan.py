@@ -4,8 +4,6 @@ sequential pattern but extender in order to manage sequences
 using complex data structures.
 """
 from ComplexPrefixSpan.Sequence import Sequence
-from ComplexPrefixSpan.SequenceItem import SequenceItem
-
 
 class ComplexPrefixSpan:
 
