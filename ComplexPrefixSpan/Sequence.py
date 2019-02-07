@@ -168,8 +168,8 @@ class Sequence():
     Return a string representation of this sequence
     """
     def __str__(self):
-        return "".join(list(map(lambda x : str(x), self.sequence)))
+        return "("+",".join(list(map(lambda x : str(x), self.sequence)))+")"
 
     def __repr__(self):
-        return "".join(list(map(lambda x: str(x), self.sequence)))
+        return "("+",".join(list(map(lambda x: str(x), self.sequence)))+")"
 
