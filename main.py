@@ -30,6 +30,6 @@ if __name__ == "__main__":
         Sequence([SequenceItem(3), SequenceItem(3)])]
 
     # Find complex sequences
-    finder = ComplexPrefixSpan(database)
-    result = finder.compute_frequent_complex_patterns(1, 3)
+    finder = ComplexPrefixSpan(dataset)
+    result = finder.compute_frequent_complex_patterns(2, 3)
     print(result)

@@ -29,16 +29,14 @@ class Builder:
                 # [0] Id of the sequence
                 # [1..n] list of sequence's items
                 result = line.split(";")
+                sequence = []
                 for i in range(1, len(result)):
-                    sequence = []
                     # Parse the sequence by removing the [,] chars
                     # and by substituing the None value with _
                     stripped = result[i].rstrip()
-                    final = stripped.replace("[","").replace("]", "").replace("None", "_")
-
-                    for element in final.split(","):
-                        sequence.append(SequenceItem(element))
-                    dataset += [Sequence(sequence)]
+                    final = stripped.replace("[","").replace("]", "").replace("None", "_").replace(" ","")
+                    sequence.append(SequenceItem(final))
+                dataset += [Sequence(sequence)]
 
         return dataset
 
