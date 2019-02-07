@@ -30,7 +30,6 @@ class Sequence():
     Return the suffix of this sequence removing its first m elements
     """
     def suffix(self, otherSequence):
-        total_suffixes = []
         # Start to scan the list until we find the starting
         # symbol of otherSequence
         suffix_found = False

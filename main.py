@@ -16,6 +16,4 @@ if __name__ == "__main__":
 
     finder = ComplexPrefixSpan(database)
     result = finder.compute_frequent_complex_patterns(1, 3)
-    #result = finder.compute_frequent_complex_patterns(1, 3)
-    #result = finder.project_database(Sequence([SequenceItem(3), SequenceItem(3)]), database)
     print(result)
