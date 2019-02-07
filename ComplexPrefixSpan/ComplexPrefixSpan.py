@@ -3,6 +3,9 @@ Class which implements the prefixSpan algorithm to mine
 sequential pattern but extender in order to manage sequences
 using complex data structures.
 """
+
+import multiprocessing
+from itertools import repeat
 from ComplexPrefixSpan.Sequence import Sequence
 
 class ComplexPrefixSpan:
@@ -10,6 +13,9 @@ class ComplexPrefixSpan:
     def __init__(self, database):
         self.database=database
         pass
+
+    def map_suffix(self, x, suffix):
+        return x.suffix(suffix)
 
     def compute_frequent_complex_patterns(self, min_support, k) -> list:
         return self._compute_frequent_patterns(min_support, k, self.database, Sequence([]))
@@ -45,7 +51,13 @@ class ComplexPrefixSpan:
 
         # For each one-frequent patterns, we start mining recursively
         # all the others starting with it
+        counter=0
         for e in frequent_items:
+
+            print("[*] ({}/{}) Looking for frequent pattern: {}".format(counter+1, len(frequent_items),e))
+            counter += 1
+
+            # Generate the projected database
             projected_database_over_k = self.project_database(e, self.database)
 
             # This means that the "frequent sequence" we are looking at
@@ -74,6 +86,8 @@ class ComplexPrefixSpan:
             return None
 
         # Return the projected database over the suffix
+        #pool = multiprocessing.Pool(processes=2,maxtasksperchild=10)
+        #return list(pool.starmap(self.map_suffix, zip(result, repeat(suffix))))
         return list(map(lambda x: x.suffix(suffix), result))
 
     """

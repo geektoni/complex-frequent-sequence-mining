@@ -13,6 +13,7 @@ if __name__ == "__main__":
     parser.add_argument('--min_support', type=int, default=2, help="Min support value which can be used.")
     parser.add_argument('--structure_type', type=str, default="binary_tree",
                         help="Specify which complex structure is contained in the sequences.")
+    parser.add_argument('--max_length_sequence', type=int, default=3, help="Maximal length of the frequent sequences.")
 
     # Parse the command line arguments
     args = parser.parse_args()
@@ -32,5 +33,5 @@ if __name__ == "__main__":
 
     # Find complex sequences
     finder = ComplexPrefixSpan(dataset)
-    result = finder.compute_frequent_complex_patterns(args.min_support, 3)
+    result = finder.compute_frequent_complex_patterns(args.min_support, args.max_length_sequence)
     print(result)
