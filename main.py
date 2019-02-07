@@ -15,6 +15,8 @@ if __name__ == "__main__":
                         help="Specify which complex structure is contained in the sequences.")
     parser.add_argument('--max_length_sequence', type=int, default=3, help="Maximal length of the frequent sequences.")
 
+    parser.add_argument('--iterative', action="store_true", default=False, help="Run using the iterative approach.")
+
     # Parse the command line arguments
     args = parser.parse_args()
 
@@ -33,5 +35,5 @@ if __name__ == "__main__":
 
     # Find complex sequences
     finder = ComplexPrefixSpan(dataset)
-    result = finder.compute_frequent_complex_patterns(args.min_support, args.max_length_sequence)
+    result = finder.compute(args.min_support, args.max_length_sequence, args.iterative)
     print(result)

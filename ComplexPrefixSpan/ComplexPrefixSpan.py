@@ -17,7 +17,42 @@ class ComplexPrefixSpan:
     def map_suffix(self, x, suffix):
         return x.suffix(suffix)
 
-    def compute_frequent_complex_patterns(self, min_support, k) -> list:
+    def compute(self, min_support, k, iterative=False):
+        if iterative:
+            return self.compute_frequent_complex_patterns_iterative(min_support, k)
+        else:
+            return self.compute_frequent_complex_patterns_recursive(min_support, k)
+
+    def compute_frequent_complex_patterns_iterative(self, min_support, k) -> list:
+
+        frequent_sequences=[]
+        frequent_item_list = []
+        for i, e in self.one_length_seq_patterns(min_support, self.database).items():
+            frequent_item_list.append((Sequence([e[1]]),k))
+
+        while(len(frequent_item_list) != 0):
+
+            e = frequent_item_list.pop(0)
+
+            if (e[1] <=0):
+                continue
+
+            projected_database_over_k = self.project_database(e[0], self.database)
+
+            if projected_database_over_k != None:
+                frequent_sequences += [e[0]]
+                one_frequent = self.one_length_seq_patterns(min_support, projected_database_over_k)
+                for i, z in one_frequent.items():
+                    tmp = e[0].copy()
+                    tmp.append(z[1])
+                    frequent_item_list.append((tmp, k-1))
+            else:
+                continue
+
+        return frequent_sequences
+
+
+    def compute_frequent_complex_patterns_recursive(self, min_support, k) -> list:
         return self._compute_frequent_patterns(min_support, k, self.database, Sequence([]))
 
     """
@@ -51,11 +86,11 @@ class ComplexPrefixSpan:
 
         # For each one-frequent patterns, we start mining recursively
         # all the others starting with it
-        counter=0
+        #counter=0
         for e in frequent_items:
 
-            print("[*] ({}/{}) Looking for frequent pattern: {}".format(counter+1, len(frequent_items),e))
-            counter += 1
+            #print("[*] ({}/{}) Looking for frequent pattern: {}".format(counter+1, len(frequent_items),e))
+            #counter += 1
 
             # Generate the projected database
             projected_database_over_k = self.project_database(e, self.database)
