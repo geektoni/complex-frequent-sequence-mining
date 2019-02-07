@@ -26,13 +26,19 @@ class Builder:
         # the structures
         with open(dataset_path) as f:
             for line in f:
-                sequence = []
                 # [0] Id of the sequence
                 # [1..n] list of sequence's items
-                result = line.split(",")
+                result = line.split(";")
                 for i in range(1, len(result)):
-                    sequence.append(SequenceItem(result[i].rstrip()))
-                dataset += [Sequence(sequence)]
+                    sequence = []
+                    # Parse the sequence by removing the [,] chars
+                    # and by substituing the None value with _
+                    stripped = result[i].rstrip()
+                    final = stripped.replace("[","").replace("]", "").replace("None", "_")
+
+                    for element in final.split(","):
+                        sequence.append(SequenceItem(element))
+                    dataset += [Sequence(sequence)]
 
         return dataset
 
