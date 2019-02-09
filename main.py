@@ -16,12 +16,15 @@ if __name__ == "__main__":
     parser.add_argument('--max_length_sequence', type=int, default=3, help="Maximal length of the frequent sequences.")
 
     parser.add_argument('--iterative', action="store_true", default=False, help="Run using the iterative approach.")
-
+    parser.add_argument('--hash', action="store_true", default=False, help="Run using the sha1 encode for items.")
     # Parse the command line arguments
     args = parser.parse_args()
 
     # Build the dataset
     dataset = Builder.create_dataset(args.dataset_path)
+
+    if args.hash:
+        dataset, hashDict = Builder.create_hash_dataset(dataset)
 
     database = [
         Sequence([SequenceItem(1), SequenceItem(2), SequenceItem(3)]),

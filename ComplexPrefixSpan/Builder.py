@@ -4,6 +4,7 @@ builds a representation use
 """
 from ComplexPrefixSpan.SequenceItem import SequenceItem
 from ComplexPrefixSpan.Sequence import Sequence
+import hashlib 
 
 
 class Builder:
@@ -40,3 +41,17 @@ class Builder:
 
         return dataset
 
+    @staticmethod
+    def create_hash_dataset(dataset_no_hash):
+        dataset = []
+        hash_to_tree = dict()
+        for row in dataset_no_hash:
+            sequence = []
+            for seqItem in row:
+                gen = hashlib.sha1()
+                gen.update(str(seqItem).encode("utf-8"))
+                newItem = gen.hexdigest()
+                hash_to_tree[newItem] = seqItem
+                sequence.append(SequenceItem(newItem))
+            dataset += [Sequence(sequence)]
+        return dataset, hash_to_tree
