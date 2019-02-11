@@ -34,7 +34,10 @@ if __name__ == "__main__":
 
     # Build the dataset
     print("[*] Building the dataset.")
-    dataset = Builder.create_dataset(args.dataset_path)
+    if args.structure_type == "synthea":
+        dataset = Builder.create_from_synthea(args.dataset_path)
+    else:
+        dataset = Builder.create_dataset(args.dataset_path)
 
     # Build a new dataset using hashes instead of the plain sequences
     if args.hash:

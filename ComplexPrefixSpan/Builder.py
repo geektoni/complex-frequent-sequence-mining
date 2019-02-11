@@ -6,6 +6,7 @@ from ComplexPrefixSpan.SequenceItem import SequenceItem
 from ComplexPrefixSpan.Sequence import Sequence
 import hashlib 
 
+import pandas as pd
 
 class Builder:
 
@@ -55,3 +56,22 @@ class Builder:
                 sequence.append(SequenceItem(newItem))
             dataset += [Sequence(sequence)]
         return dataset, hash_to_tree
+
+    @staticmethod
+    def create_from_synthea(dataset_path):
+
+        result = []
+
+        df = pd.read_csv(dataset_path)
+
+        for p in df["PATIENT"].unique():
+            seq = []
+            df_p = df[df["PATIENT"]==p]
+            for r in df_p.iterrows():
+                item = []
+                item.append(r[1]["DESCRIPTION"])
+                item.append(r[1]["REASONDESCRIPTION"])
+                seq.append(SequenceItem(item))
+            result.append(Sequence(seq))
+
+        return result
