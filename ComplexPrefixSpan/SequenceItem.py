@@ -18,11 +18,14 @@ class SequenceItem():
     def get_hash(self):
         pass
 
+    def __hash__(self):
+        return int(self.value.replace(",","").replace("_", "0"))
+
     """
     Method which will be used to compare directly
     two elements of a sequence.
     """
-    def compare(self, object) -> bool:
+    def compare(self, object, tresh) -> bool:
         return object.value == self.value
 
     """
@@ -33,3 +36,14 @@ class SequenceItem():
 
     def __repr__(self):
         return "{"+str(self.value)+"}"
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def __gt__(self, other):
+        return self.value > other.value
+
+    def __eq__(self, other):
+        return self.value == other.value
+
+

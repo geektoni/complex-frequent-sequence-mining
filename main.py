@@ -6,6 +6,8 @@ from ComplexPrefixSpan.Builder import Builder
 from ComplexPrefixSpan.ComplexPrefixSpan import ComplexPrefixSpan
 from ComplexPrefixSpan.Sequence import *
 
+from pymining import itemmining
+
 if __name__ == "__main__":
 
     # Add a command line parser
@@ -20,6 +22,7 @@ if __name__ == "__main__":
     parser.add_argument('--hash', action="store_true", default=False, help="Run using the sha1 encode for items.")
     parser.add_argument('--cores', type=int, default=1, help="How many core we want to use.")
     parser.add_argument('--profile_execution', default=False, action="store_true", help="Take some performance measures.")
+    parser.add_argument('--use_frequent_itemset', default=False, action="store_true", help="Use frequent itemset (to compare).")
 
     # Parse the command line arguments
     args = parser.parse_args()
@@ -43,15 +46,21 @@ if __name__ == "__main__":
         Sequence([SequenceItem(1), SequenceItem(2), SequenceItem(3)]),
         Sequence([SequenceItem(3), SequenceItem(3)])]
 
-    # Find complex sequences
-    print("[*] Executing Prefix Span algorithm on {} cores".format(args.cores))
+    if not args.use_frequent_itemset:
+        # Find complex sequences
+        print("[*] Executing Prefix Span algorithm on {} cores".format(args.cores))
 
-    finder = ComplexPrefixSpan(dataset, int(args.cores))
-    if not args.profile_execution:
-        result = finder.compute(args.min_support, args.max_length_sequence, args.iterative)
-        print(result)
+        finder = ComplexPrefixSpan(dataset, int(args.cores))
+        if not args.profile_execution:
+            result = finder.compute(args.min_support, args.max_length_sequence, args.iterative)
+            print(result[1])
+        else:
+            profile.run("finder.compute(args.min_support, args.max_length_sequence, args.iterative)", "prefix_span.stat")
+            p = pstats.Stats('prefix_span.stat')
+            p.strip_dirs().sort_stats(-1).print_stats()
     else:
-        profile.run("finder.compute(args.min_support, args.max_length_sequence, args.iterative)", "prefix_span.stat")
-        p = pstats.Stats('prefix_span.stat')
-        p.strip_dirs().sort_stats(-1).print_stats()
+        print("[*] Execution Frequent Itemset algorithm.")
+        relim_input = itemmining.get_relim_input(dataset)
+        report = itemmining.relim(relim_input, min_support=2)
+        print(report[1])
 
