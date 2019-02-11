@@ -23,6 +23,7 @@ if __name__ == "__main__":
     parser.add_argument('--cores', type=int, default=1, help="How many core we want to use.")
     parser.add_argument('--profile_execution', default=False, action="store_true", help="Take some performance measures.")
     parser.add_argument('--use_frequent_itemset', default=False, action="store_true", help="Use frequent itemset (to compare).")
+    parser.add_argument('--jaccard_tresh', default=1.0, type=float, help="Jaccard Similarity treshold")
 
     # Parse the command line arguments
     args = parser.parse_args()
@@ -50,9 +51,10 @@ if __name__ == "__main__":
         # Find complex sequences
         print("[*] Executing Prefix Span algorithm on {} cores".format(args.cores))
 
-        finder = ComplexPrefixSpan(dataset, int(args.cores))
+        finder = ComplexPrefixSpan(dataset, int(args.cores), args.jaccard_tresh)
         if not args.profile_execution:
             result = finder.compute(args.min_support, args.max_length_sequence, args.iterative)
+            result[1].sort()
             print(result[1])
         else:
             profile.run("finder.compute(args.min_support, args.max_length_sequence, args.iterative)", "prefix_span.stat")

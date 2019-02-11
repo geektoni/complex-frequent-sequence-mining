@@ -11,13 +11,14 @@ import utils
 
 class ComplexPrefixSpan:
 
-    def __init__(self, database, cores=1):
+    def __init__(self, database, cores=1, tresh=1):
         self.database=database
         self.cores = cores
+        self.tresh = tresh
         pass
 
     def map_suffix(self, x, suffix):
-        return x.suffix(suffix)
+        return x.suffix(suffix, self.tresh)
 
     def compute(self, min_support, k, iterative=False):
         if iterative:
@@ -147,6 +148,6 @@ class ComplexPrefixSpan:
         support_set = dict()
         for s in database:
             for seq in sequences:
-                if s.contains(seq):
+                if s.contains(seq, self.tresh):
                     support_set[str(seq)] = (1, seq) if not str(seq) in support_set else (support_set[str(seq)][0]+1, seq)
         return support_set

@@ -29,12 +29,12 @@ class Sequence():
     """
     Return the suffix of this sequence removing its first m elements
     """
-    def suffix(self, otherSequence):
+    def suffix(self, otherSequence, tresh=1):
         # Start to scan the list until we find the starting
         # symbol of otherSequence
         suffix_found = False
         for i in range(0, self.length):
-            if self.sequence[i].compare(otherSequence[0]):
+            if self.sequence[i].compare(otherSequence[0], tresh):
                 suffix_found = True
                 # If we found it, check that we have enough
                 # space for the otherSequence.
@@ -43,7 +43,7 @@ class Sequence():
                 # Check that all the successive symbols are
                 # actually equals, otherwise return false
                 for j in range(0, len(otherSequence)):
-                    if not self.sequence[i+j].compare(otherSequence[j]):
+                    if not self.sequence[i+j].compare(otherSequence[j], tresh):
                         suffix_found = False
                         break
                 if suffix_found:
@@ -53,16 +53,16 @@ class Sequence():
     """
     Check if this sequence contains a given item(s)
     """
-    def contains(self, sequenceItems):
+    def contains(self, sequenceItems, tresh=1):
         for i in range(0, len(sequenceItems)):
-            if not self.sequence[i].compare(sequenceItems[i]):
+            if not self.sequence[i].compare(sequenceItems[i], tresh):
                 return False
         return True
 
     """
     Check if this sequence starts with the given other sequence
     """
-    def starts_with(self, otherSequence) -> bool:
+    def starts_with(self, otherSequence, tresh=1) -> bool:
 
         # If the other sequence is bigger return directly false
         if len(otherSequence) > self.length or len(otherSequence) == 0:
@@ -70,7 +70,7 @@ class Sequence():
 
         # Check all the elements
         for i in range(0, len(otherSequence)):
-            if not otherSequence[i].compare(self.sequence[i]):
+            if not otherSequence[i].compare(self.sequence[i], tresh):
                 return False
 
         return True
@@ -87,7 +87,7 @@ class Sequence():
         # If they have the same length then do it item by item
         if self.length == len(otherSequence):
             for i in range(0, self.length):
-                if not self.sequence[i].compare(otherSequence[i]):
+                if not self.sequence[i].compare(otherSequence[i], 1):
                     return False
             return True
 
@@ -95,7 +95,7 @@ class Sequence():
         # symbol of otherSequence
         status_found = False
         for i in range(0, self.length):
-            if self.sequence[i].compare(otherSequence[0]):
+            if self.sequence[i].compare(otherSequence[0],1):
                 status_found = True
                 # If we found it, check that we have enough
                 # space for the otherSequence.
@@ -104,7 +104,7 @@ class Sequence():
                 # Check that all the successive symbols are
                 # actually equals, otherwise return false
                 for j in range(1, len(otherSequence)):
-                    if not self.sequence[i+j].compare(otherSequence[j]):
+                    if not self.sequence[i+j].compare(otherSequence[j], 1):
                         status_found = False
                         break
                 if status_found:
@@ -119,7 +119,7 @@ class Sequence():
             return False
 
         for i in range(0, self.length):
-            if not self.sequence[i].compare(other[i]):
+            if not self.sequence[i].compare(other[i], 1):
                 return False
         return True
 
@@ -172,4 +172,11 @@ class Sequence():
 
     def __repr__(self):
         return "("+",".join(list(map(lambda x: str(x), self.sequence)))+")"
+
+
+    def __lt__(self, other):
+        return self.sequence < other.sequence
+
+    def __gt__(self, other):
+        return self.sequence > other.sequence
 
