@@ -7,11 +7,13 @@ using complex data structures.
 import multiprocessing
 from itertools import repeat
 from ComplexPrefixSpan.Sequence import Sequence
+import utils
 
 class ComplexPrefixSpan:
 
-    def __init__(self, database):
+    def __init__(self, database, cores=1):
         self.database=database
+        self.cores = cores
         pass
 
     def map_suffix(self, x, suffix):
@@ -19,11 +21,12 @@ class ComplexPrefixSpan:
 
     def compute(self, min_support, k, iterative=False):
         if iterative:
-            print("Using the iterative version")
+            print("[*] Using the iterative version.")
             return self.compute_frequent_complex_patterns_iterative(min_support, k)
         else:
             return self.compute_frequent_complex_patterns_recursive(min_support, k)
 
+    @utils.timing
     def compute_frequent_complex_patterns_iterative(self, min_support, k) -> list:
 
         frequent_sequences=[]
@@ -52,7 +55,7 @@ class ComplexPrefixSpan:
 
         return frequent_sequences
 
-
+    @utils.timing
     def compute_frequent_complex_patterns_recursive(self, min_support, k) -> list:
         return self._compute_frequent_patterns(min_support, k, self.database, Sequence([]))
 
@@ -122,8 +125,8 @@ class ComplexPrefixSpan:
             return None
 
         # Return the projected database over the suffix
-        with multiprocessing.Pool(4) as pool:
-            return list(pool.starmap(self.map_suffix, zip(result, repeat(suffix)), 1000))
+        with multiprocessing.Pool(self.cores) as pool:
+            return list(pool.starmap(self.map_suffix, zip(result, repeat(suffix))))
 
     """
     Compute the length-1 sequential patterns with support greater than k
