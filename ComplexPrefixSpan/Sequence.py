@@ -180,3 +180,5 @@ class Sequence():
     def __gt__(self, other):
         return self.sequence > other.sequence
 
+    def __hash__(self):
+        return hash(frozenset(self.sequence))
