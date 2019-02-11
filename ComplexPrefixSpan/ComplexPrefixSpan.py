@@ -19,6 +19,7 @@ class ComplexPrefixSpan:
 
     def compute(self, min_support, k, iterative=False):
         if iterative:
+            print("Using the iterative version")
             return self.compute_frequent_complex_patterns_iterative(min_support, k)
         else:
             return self.compute_frequent_complex_patterns_recursive(min_support, k)
@@ -121,9 +122,8 @@ class ComplexPrefixSpan:
             return None
 
         # Return the projected database over the suffix
-        #pool = multiprocessing.Pool(processes=2,maxtasksperchild=10)
-        #return list(pool.starmap(self.map_suffix, zip(result, repeat(suffix))))
-        return list(map(lambda x: x.suffix(suffix), result))
+        with multiprocessing.Pool(4) as pool:
+            return list(pool.starmap(self.map_suffix, zip(result, repeat(suffix)), 1000))
 
     """
     Compute the length-1 sequential patterns with support greater than k
