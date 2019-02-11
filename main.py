@@ -2,9 +2,12 @@ import argparse
 import profile
 import pstats
 
+import os
+
+import pickle
+
 from ComplexPrefixSpan.Builder import Builder
 from ComplexPrefixSpan.ComplexPrefixSpan import ComplexPrefixSpan
-from ComplexPrefixSpan.Sequence import *
 
 from pymining import itemmining
 
@@ -24,6 +27,7 @@ if __name__ == "__main__":
     parser.add_argument('--profile_execution', default=False, action="store_true", help="Take some performance measures.")
     parser.add_argument('--use_frequent_itemset', default=False, action="store_true", help="Use frequent itemset (to compare).")
     parser.add_argument('--jaccard_tresh', default=1.0, type=float, help="Jaccard Similarity treshold")
+    parser.add_argument("--output_dir", default="./results/", type=str, help="Output dir for the results")
 
     # Parse the command line arguments
     args = parser.parse_args()
@@ -37,15 +41,13 @@ if __name__ == "__main__":
         print("[*] Building the hash version of the dataset.")
         dataset, hashDict = Builder.create_hash_dataset(dataset)
 
-    database = [
-        Sequence([SequenceItem(1), SequenceItem(2), SequenceItem(3)]),
-        Sequence([SequenceItem(3), SequenceItem(3), SequenceItem(9)]),
-        Sequence([SequenceItem(3), SequenceItem(3), SequenceItem(3)]),
-    ]
-
-    seqs =  [
-        Sequence([SequenceItem(1), SequenceItem(2), SequenceItem(3)]),
-        Sequence([SequenceItem(3), SequenceItem(3)])]
+    # Generate the name of the output file
+    if not args.use_frequent_itemset:
+        output_result = os.path.splitext(os.path.basename(args.dataset_path))[0]+"_"+str(int(args.jaccard_tresh*100))\
+                        +"_"+str(args.min_support)+"_"+str(args.max_length_sequence)+".db"
+    else:
+        output_result = os.path.splitext(os.path.basename(args.dataset_path))[0] + "_frequentitems_"\
+                        + str(args.min_support) + ".db"
 
     if not args.use_frequent_itemset:
         # Find complex sequences
@@ -55,14 +57,19 @@ if __name__ == "__main__":
         if not args.profile_execution:
             result = finder.compute(args.min_support, args.max_length_sequence, args.iterative)
             result[1].sort()
+
             print(result[1])
         else:
-            profile.run("finder.compute(args.min_support, args.max_length_sequence, args.iterative)", "prefix_span.stat")
+            result = profile.run("finder.compute(args.min_support, args.max_length_sequence, args.iterative)", "prefix_span.stat")
             p = pstats.Stats('prefix_span.stat')
             p.strip_dirs().sort_stats(-1).print_stats()
     else:
         print("[*] Execution Frequent Itemset algorithm.")
         relim_input = itemmining.get_relim_input(dataset)
-        report = itemmining.relim(relim_input, min_support=2)
-        print(report[1])
+        result = itemmining.relim(relim_input, min_support=args.min_support)
+        print(result[1])
+
+    # Save the file to disk
+    with open(args.output_dir+output_result, "wb") as f:
+        pickle.dump(result[1], f)
 
