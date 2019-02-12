@@ -1,3 +1,5 @@
+import hashlib
+
 """
 This class represent an item which will present into
 the sequences in the database.
@@ -19,7 +21,8 @@ class SequenceItem():
         pass
 
     def __hash__(self):
-        return int(self.value.replace(",","").replace("_", "0"))
+        return int(hashlib.sha384(self.value.encode("utf-8")).hexdigest(), 16) % (10 ** 8)
+        #return int(self.value.replace(",",""))
 
     """
     Method which will be used to compare directly
