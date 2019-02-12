@@ -23,9 +23,9 @@ class ComplexPrefixSpan:
     def compute(self, min_support, k, iterative=False):
         if iterative:
             print("[*] Using the iterative version.")
-            return self.compute_frequent_complex_patterns_iterative(min_support, k)
+            return self.compute_frequent_complex_patterns_iterative(min_support*len(self.database), k)
         else:
-            return self.compute_frequent_complex_patterns_recursive(min_support, k)
+            return self.compute_frequent_complex_patterns_recursive(min_support*len(self.database), k)
 
     @utils.timing
     def compute_frequent_complex_patterns_iterative(self, min_support, k) -> list:

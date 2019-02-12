@@ -23,7 +23,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run Complex prefix span over database')
     parser.add_argument('dataset_path', nargs="?", type=str, default="./datasets/test_sample.csv",
                         help='Path to the csv file which holds the sequence dataset.')
-    parser.add_argument('--min_support', type=int, default=2, help="Min support value which can be used.")
+    parser.add_argument('--min_support', type=float, default=0.03, help="Min support value which can be used.")
     parser.add_argument('--structure_type', type=str, default="binary_tree",
                         help="Specify which complex structure is contained in the sequences.")
     parser.add_argument('--max_length_sequence', type=int, default=3, help="Maximal length of the frequent sequences.")
@@ -111,7 +111,7 @@ if __name__ == "__main__":
                                 continue
 
                             # Database name
-                            dataset_name = "./datasets/dataset_"+d_size+"_"+m_tree+"_"+m_seq+".db"
+                            dataset_name = "./datasets/dataset_"+d_size+"_"+m_tree+"_"+m_seq+".csv"
 
                             # Build the dataset
                             print("[*] Building the dataset.")
@@ -154,7 +154,7 @@ if __name__ == "__main__":
                             else:
                                 print("[*] Execution Frequent Itemset algorithm on dataset {}".format(dataset_name))
                                 relim_input = itemmining.get_relim_input(dataset)
-                                result = frequent_itemset(relim_input, args.min_support)
+                                result = frequent_itemset(relim_input, args.min_support*len(dataset))
 
                                 final_string = "{},{},{},{},{},{},{},".format(alg, d_size, m_tree, m_seq, j, result[0],
                                                                               len(result[1]))
