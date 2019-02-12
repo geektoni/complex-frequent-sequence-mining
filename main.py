@@ -6,12 +6,16 @@ import os
 
 import pickle
 
+import logging
+
 from ComplexPrefixSpan.Builder import Builder
 from ComplexPrefixSpan.ComplexPrefixSpan import ComplexPrefixSpan
 
 from ExperimentParser import ExperimentParser
 
 from pymining import itemmining
+
+from utils import count_occurences, frequent_itemset
 
 if __name__ == "__main__":
 
@@ -64,7 +68,7 @@ if __name__ == "__main__":
             if not args.profile_execution:
                 result = finder.compute(args.min_support, args.max_length_sequence, args.iterative)
                 result[1].sort()
-
+                print(count_occurences(result[1], args.max_length_sequence))
                 print(result[1])
             else:
                 result = profile.run("finder.compute(args.min_support, args.max_length_sequence, args.iterative)", "prefix_span.stat")
@@ -81,8 +85,20 @@ if __name__ == "__main__":
             pickle.dump(result[1], f)
     else:
 
+        logger = logging.getLogger("performance_logger")
+        file_handler = logging.FileHandler("./experiments/performance.csv")
+        logger.addHandler(file_handler)
+        logger.setLevel(logging.INFO)
+
         exp_parser = ExperimentParser(dict(), "./experiments.conf")
         args_e = exp_parser.parse()
+
+        number_of_min=""
+        for i in range(1, args.max_length_sequence+1):
+            number_of_min += str(i)+","
+        number_of_min = number_of_min[0:len(number_of_min)-1]
+
+        logger.info("algorithm,database_size,max_tree_size,max_sequence_size,jaccard_tresh,time,total_frequent_patterns,"+number_of_min)
 
         for alg in args_e["algorithms"]:
             for d_size in args_e["database_size"]:
@@ -124,13 +140,31 @@ if __name__ == "__main__":
 
                                 finder = ComplexPrefixSpan(dataset, int(args.cores), float(j))
                                 result = finder.compute(args.min_support, args.max_length_sequence, args.iterative)
-                                result[1].sort()
-                                print(result[1])
+
+                                final_string = "{},{},{},{},{},{},{},".format(alg, d_size, m_tree, m_seq, j, result[0], len(result[1]))
+
+                                for e in count_occurences(result[1], args.max_length_sequence):
+                                    final_string += str(e)+","
+                                final_string = final_string[0:len(final_string)-1]
+                                logger.info(final_string)
+
+
+                                #result[1].sort()
+                                #print(result[1])
                             else:
                                 print("[*] Execution Frequent Itemset algorithm on dataset {}".format(dataset_name))
                                 relim_input = itemmining.get_relim_input(dataset)
-                                result = itemmining.relim(relim_input, min_support=args.min_support)
-                                print(result[1])
+                                result = frequent_itemset(relim_input, min_support=args.min_support)
+
+                                final_string = "{},{},{},{},{},{},{},".format(alg, d_size, m_tree, m_seq, j, result[0],
+                                                                              len(result[1]))
+
+                                for e in count_occurences(result, args.max_length_sequence):
+                                    final_string += str(e) + ","
+                                final_string = final_string[0:len(final_string) - 1]
+                                logger.info(final_string)
+
+                                #print(result[1])
 
                             # Save the file to disk
                             with open(args.output_dir + output_result, "wb") as f:

@@ -1,5 +1,7 @@
 import time
 
+from pymining import itemmining
+
 
 def timing(f):
     """
@@ -15,3 +17,16 @@ def timing(f):
 
         return (time2-time1)*1000.0, ret
     return wrap
+
+
+def count_occurences(res, length):
+    count = [0 for x in range(0, length)]
+    for e in res:
+        count[len(e)-1] += 1
+    return count
+
+@timing
+def frequent_itemset(input, min_supp):
+    return itemmining.relim(input, min_supp)
+
+
