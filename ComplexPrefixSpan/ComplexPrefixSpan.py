@@ -66,7 +66,7 @@ class ComplexPrefixSpan:
     """
     def _compute_frequent_patterns(self, min_support, k, database, previous_frequent_item) -> list:
 
-        print(previous_frequent_item)
+        #print(previous_frequent_item)
 
         # Frequent sequences found
         frequent_sequences = []

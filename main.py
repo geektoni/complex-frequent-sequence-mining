@@ -59,7 +59,7 @@ if __name__ == "__main__":
         finder = ComplexPrefixSpan(dataset, int(args.cores), args.jaccard_tresh)
         if not args.profile_execution:
             result = finder.compute(args.min_support, args.max_length_sequence, args.iterative)
-            result[1].sort()
+            #result[1].sort()
 
             print(result[1])
         else:
