@@ -69,8 +69,8 @@ class Builder:
             df_p = df[df["PATIENT"]==p]
             for r in df_p.iterrows():
                 item = []
-                item.append(r[1]["DESCRIPTION"])
-                item.append(r[1]["REASONDESCRIPTION"])
+                item.append(str(r[1]["DESCRIPTION"]))
+                item.append(str(r[1]["REASONDESCRIPTION"]))
                 seq.append(SequenceItem(item))
             result.append(Sequence(seq))
 
