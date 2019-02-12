@@ -94,7 +94,7 @@ if __name__ == "__main__":
         args_e = exp_parser.parse()
 
         number_of_min=""
-        for i in range(1, args.max_length_sequence+1):
+        for i in range(1, 50+1):
             number_of_min += str(i)+","
         number_of_min = number_of_min[0:len(number_of_min)-1]
 
@@ -139,11 +139,11 @@ if __name__ == "__main__":
                                 print("[*] Executing Prefix Span algorithm on {} cores on dataset {}".format(args.cores, dataset_name))
 
                                 finder = ComplexPrefixSpan(dataset, int(args.cores), float(j))
-                                result = finder.compute(args.min_support, args.max_length_sequence, args.iterative)
+                                result = finder.compute(args.min_support, int(m_seq), args.iterative)
 
                                 final_string = "{},{},{},{},{},{},{},".format(alg, d_size, m_tree, m_seq, j, result[0], len(result[1]))
 
-                                for e in count_occurences(result[1], args.max_length_sequence):
+                                for e in count_occurences(result[1], 50):
                                     final_string += str(e)+","
                                 final_string = final_string[0:len(final_string)-1]
                                 logger.info(final_string)
@@ -154,17 +154,15 @@ if __name__ == "__main__":
                             else:
                                 print("[*] Execution Frequent Itemset algorithm on dataset {}".format(dataset_name))
                                 relim_input = itemmining.get_relim_input(dataset)
-                                result = frequent_itemset(relim_input, min_support=args.min_support)
+                                result = frequent_itemset(relim_input, args.min_support)
 
                                 final_string = "{},{},{},{},{},{},{},".format(alg, d_size, m_tree, m_seq, j, result[0],
                                                                               len(result[1]))
 
-                                for e in count_occurences(result, args.max_length_sequence):
+                                for e in count_occurences(result[1], 50):
                                     final_string += str(e) + ","
                                 final_string = final_string[0:len(final_string) - 1]
                                 logger.info(final_string)
-
-                                #print(result[1])
 
                             # Save the file to disk
                             with open(args.output_dir + output_result, "wb") as f:

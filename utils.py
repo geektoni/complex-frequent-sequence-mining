@@ -22,11 +22,12 @@ def timing(f):
 def count_occurences(res, length):
     count = [0 for x in range(0, length)]
     for e in res:
-        count[len(e)-1] += 1
+        if not len(e) > length:
+            count[len(e)-1] += 1
     return count
 
 @timing
 def frequent_itemset(input, min_supp):
-    return itemmining.relim(input, min_supp)
+    return itemmining.relim(input, min_support=min_supp)
 
 
