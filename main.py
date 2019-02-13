@@ -23,10 +23,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run Complex prefix span over database')
     parser.add_argument('dataset_path', nargs="?", type=str, default="./datasets/test_sample.csv",
                         help='Path to the csv file which holds the sequence dataset.')
-    parser.add_argument('--min_support', type=float, default=0.03, help="Min support value which can be used.")
+    parser.add_argument('--min_support', type=float, default=0.3, help="Min support value which can be used.")
     parser.add_argument('--structure_type', type=str, default="binary_tree",
                         help="Specify which complex structure is contained in the sequences.")
-    parser.add_argument('--max_length_sequence', type=int, default=3, help="Maximal length of the frequent sequences.")
+    parser.add_argument('--max_length_sequence', type=int, default=10, help="Maximal length of the frequent sequences.")
     parser.add_argument('--iterative', action="store_true", default=False, help="Run using the iterative approach.")
     parser.add_argument('--hash', action="store_true", default=False, help="Run using the sha1 encode for items.")
     parser.add_argument('--cores', type=int, default=1, help="How many core we want to use.")
