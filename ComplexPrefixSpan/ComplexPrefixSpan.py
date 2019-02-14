@@ -37,18 +37,15 @@ class ComplexPrefixSpan:
             frequent_item_list.append((Sequence([e[1]]),k))
 
         while(len(frequent_item_list) != 0):
-            #print(str(len(frequent_item_list)))
             e = frequent_item_list.pop(0)
 
             if (e[1] <=0):
                 continue
 
             projected_database_over_k = self.project_database(e[0], self.database)
-            #print(str(e[0]) + " " + str(e[1]))
             if projected_database_over_k != None:
                 frequent_sequences += [e[0]]
                 one_frequent = self.one_length_seq_patterns(min_support, projected_database_over_k)
-                # print(one_frequent)
                 for i, z in one_frequent.items():
                     tmp = e[0].copy()
                     tmp.append(z[1])

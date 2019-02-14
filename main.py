@@ -86,7 +86,7 @@ if __name__ == "__main__":
     else:
 
         logger = logging.getLogger("performance_logger")
-        file_handler = logging.FileHandler("./experiments/performance.csv")
+        file_handler = logging.FileHandler("./experiments/performance_2.csv")
         logger.addHandler(file_handler)
         logger.setLevel(logging.INFO)
 
@@ -98,73 +98,74 @@ if __name__ == "__main__":
             number_of_min += str(i)+","
         number_of_min = number_of_min[0:len(number_of_min)-1]
 
-        logger.info("algorithm,database_size,max_tree_size,max_sequence_size,jaccard_tresh,time,total_frequent_patterns,"+number_of_min)
+        logger.info("algorithm,database_size,max_tree_size,max_sequence_size,jaccard_tresh,min_support,time,total_frequent_patterns,"+number_of_min)
 
         for alg in args_e["algorithms"]:
             for d_size in args_e["database_size"]:
                 for m_tree in args_e["max_tree_size"]:
                     for m_seq in args_e["max_sequence_size"]:
-                        for j in args_e["jaccard_tresh"]:
+                        for ms in args_e["min_support"]:
+                            for j in args_e["jaccard_tresh"]:
 
-                            # Use frequent itemset only with equality
-                            if alg == "frequent" and float(j) != 1.0:
-                                continue
+                                # Use frequent itemset only with equality
+                                if alg == "frequent" and float(j) != 1.0:
+                                    continue
 
-                            # Database name
-                            dataset_name = "./datasets/dataset_"+d_size+"_"+m_tree+"_"+m_seq+".csv"
+                                # Database name
+                                dataset_name = "./datasets/dataset_"+d_size+"_"+m_tree+"_"+m_seq+".csv"
 
-                            # Build the dataset
-                            print("[*] Building the dataset.")
-                            if args.structure_type == "synthea":
-                                dataset = Builder.create_from_synthea(args.dataset_path)
-                            else:
-                                dataset = Builder.create_dataset(dataset_name)
+                                # Build the dataset
+                                print("[*] Building the dataset.")
+                                if args.structure_type == "synthea":
+                                    dataset = Builder.create_from_synthea(args.dataset_path)
+                                else:
+                                    dataset = Builder.create_dataset(dataset_name)
 
-                            # Build a new dataset using hashes instead of the plain sequences
-                            if args.hash:
-                                print("[*] Building the hash version of the dataset.")
-                                dataset, hashDict = Builder.create_hash_dataset(dataset)
+                                # Build a new dataset using hashes instead of the plain sequences
+                                if args.hash:
+                                    print("[*] Building the hash version of the dataset.")
+                                    dataset, hashDict = Builder.create_hash_dataset(dataset)
 
-                            # Generate the name of the output file
-                            if not alg == "frequent":
-                                output_result = os.path.splitext(os.path.basename(dataset_name))[0] + "_" + str(
-                                    int(args.jaccard_tresh * 100)) \
-                                                + "_" + str(args.min_support) + "_" + str(args.max_length_sequence) + ".db"
-                            else:
-                                output_result = os.path.splitext(os.path.basename(dataset_name))[0] + "_frequentitems_" \
-                                                + str(args.min_support) + ".db"
+                                # Generate the name of the output file
+                                if not alg == "frequent":
+                                    output_result = os.path.splitext(os.path.basename(dataset_name))[0] + "_" + str(
+                                        int(args.jaccard_tresh * 100)) \
+                                                    + "_" + str(args.min_support) + "_" + str(args.max_length_sequence) + ".db"
+                                else:
+                                    output_result = os.path.splitext(os.path.basename(dataset_name))[0] + "_frequentitems_" \
+                                                    + str(args.min_support) + ".db"
 
-                            if not alg == "frequent":
-                                # Find complex sequences
-                                print("[*] Executing Prefix Span algorithm on {} cores on dataset {}".format(args.cores, dataset_name))
+                                if not alg == "frequent":
+                                    # Find complex sequences
+                                    print("[*] Executing Prefix Span algorithm on {} cores on dataset {}".format(args.cores, dataset_name))
 
-                                finder = ComplexPrefixSpan(dataset, int(args.cores), float(j))
-                                result = finder.compute(args.min_support, int(m_seq), args.iterative)
+                                    finder = ComplexPrefixSpan(dataset, int(args.cores), float(j))
+                                    result = finder.compute(ms, int(m_seq), args.iterative)
 
-                                final_string = "{},{},{},{},{},{},{},".format(alg, d_size, m_tree, m_seq, j, result[0], len(result[1]))
+                                    final_string = "{},{},{},{},{},{},{},{},".format(alg, d_size, m_tree, m_seq, j, ms, result[0], len(result[1]))
 
-                                for e in count_occurences(result[1], 50):
-                                    final_string += str(e)+","
-                                final_string = final_string[0:len(final_string)-1]
-                                logger.info(final_string)
+                                    for e in count_occurences(result[1], 50):
+                                        final_string += str(e)+","
+                                    final_string = final_string[0:len(final_string)-1]
+                                    logger.info(final_string)
 
 
-                                #result[1].sort()
-                                #print(result[1])
-                            else:
-                                print("[*] Execution Frequent Itemset algorithm on dataset {}".format(dataset_name))
-                                relim_input = itemmining.get_relim_input(dataset)
-                                result = frequent_itemset(relim_input, args.min_support*len(dataset))
+                                    #result[1].sort()
+                                    #print(result[1])
+                                else:
+                                    print("[*] Execution Frequent Itemset algorithm on dataset {}".format(dataset_name))
+                                    relim_input = itemmining.get_relim_input(dataset)
+                                    result = frequent_itemset(relim_input, ms*len(dataset))
 
-                                final_string = "{},{},{},{},{},{},{},".format(alg, d_size, m_tree, m_seq, j, result[0],
-                                                                              len(result[1]))
+                                    final_string = "{},{},{},{},{},{},{},{},".format(alg, d_size, m_tree, m_seq, j, ms, result[0],
+                                                                                  len(result[1]))
 
-                                for e in count_occurences(result[1], 50):
-                                    final_string += str(e) + ","
-                                final_string = final_string[0:len(final_string) - 1]
-                                logger.info(final_string)
+                                    for e in count_occurences(result[1], 50):
+                                        final_string += str(e) + ","
+                                    final_string = final_string[0:len(final_string) - 1]
+                                    logger.info(final_string)
 
-                            # Save the file to disk
-                            with open(args.output_dir + output_result, "wb") as f:
-                                pickle.dump(result[1], f)
+                                # Save the file to disk
+                                with open(args.output_dir + output_result, "wb") as f:
+                                    pickle.dump(result[1], f)
 

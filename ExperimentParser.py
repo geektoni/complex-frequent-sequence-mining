@@ -14,6 +14,7 @@ class ExperimentParser:
         self.args["database_size"] = self.getlist(self.parser["Default"]["database_size"])
         self.args["max_tree_size"] = self.getlist(self.parser["Default"]["max_tree_size"])
         self.args["max_sequence_size"] = self.getlist(self.parser["Default"]["max_sequence_size"])
+        self.args["min_support"] = self.getlist(self.parser["Default"]["min_support"])
 
         return self.args
 
