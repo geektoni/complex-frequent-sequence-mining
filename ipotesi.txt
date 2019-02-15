@@ -1,6 +1,0 @@
-partendo dall struttura complessa interna ai singoli nodi:
-	1- trovare le strutture interne piu frequenti -> trovi i nodi più frequenti.
-	la nostra ipotesi è: subset frequenti sono composti da nodi frequenti che contengono strutture simili e frequenti
-trovati quindi i nodi più frequenti ritorniamo al set e andiamo a definire strutture frequenti:
-	-togliendo l'ordine dei nodi si può ridurre il problema al frequent itemset.
-	- oppure pattern mining strutture ordinate frequenti.
