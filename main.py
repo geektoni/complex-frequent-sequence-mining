@@ -86,7 +86,7 @@ if __name__ == "__main__":
     else:
 
         logger = logging.getLogger("performance_logger")
-        file_handler = logging.FileHandler("./experiments/performance_2.csv")
+        file_handler = logging.FileHandler("./experiments/performance_5.csv")
         logger.addHandler(file_handler)
         logger.setLevel(logging.INFO)
 
@@ -130,17 +130,17 @@ if __name__ == "__main__":
                                 if not alg == "frequent":
                                     output_result = os.path.splitext(os.path.basename(dataset_name))[0] + "_" + str(
                                         int(args.jaccard_tresh * 100)) \
-                                                    + "_" + str(args.min_support) + "_" + str(args.max_length_sequence) + ".db"
+                                                    + "_" + str(int(float(ms)*100)) + "_" + str(args.max_length_sequence) + ".db"
                                 else:
                                     output_result = os.path.splitext(os.path.basename(dataset_name))[0] + "_frequentitems_" \
-                                                    + str(args.min_support) + ".db"
+                                                    + str(int(float(ms)*100)) + ".db"
 
                                 if not alg == "frequent":
                                     # Find complex sequences
                                     print("[*] Executing Prefix Span algorithm on {} cores on dataset {}".format(args.cores, dataset_name))
 
                                     finder = ComplexPrefixSpan(dataset, int(args.cores), float(j))
-                                    result = finder.compute(ms, int(m_seq), args.iterative)
+                                    result = finder.compute(float(ms), int(m_seq), args.iterative)
 
                                     final_string = "{},{},{},{},{},{},{},{},".format(alg, d_size, m_tree, m_seq, j, ms, result[0], len(result[1]))
 
@@ -155,7 +155,7 @@ if __name__ == "__main__":
                                 else:
                                     print("[*] Execution Frequent Itemset algorithm on dataset {}".format(dataset_name))
                                     relim_input = itemmining.get_relim_input(dataset)
-                                    result = frequent_itemset(relim_input, ms*len(dataset))
+                                    result = frequent_itemset(relim_input, float(ms)*len(dataset))
 
                                     final_string = "{},{},{},{},{},{},{},{},".format(alg, d_size, m_tree, m_seq, j, ms, result[0],
                                                                                   len(result[1]))
@@ -168,4 +168,3 @@ if __name__ == "__main__":
                                 # Save the file to disk
                                 with open(args.output_dir + output_result, "wb") as f:
                                     pickle.dump(result[1], f)
-
