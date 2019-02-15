@@ -1,8 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib
 import numpy as np
 from ExperimentParser import ExperimentParser
 
+font = {'size'   : 14}
+
+matplotlib.rc('font', **font)
 
 _file ="./experiments/performance_3.csv"
 
@@ -14,6 +18,10 @@ args_e = exp_parser.parse()
 initial = 221
 counter=0
 base = 221
+
+total_lines = []
+
+#plt.figure(figsize=(12,8))
 
 for d_size in args_e["database_size"]:
     for m_tree in args_e["max_tree_size"]:
@@ -48,10 +56,11 @@ for d_size in args_e["database_size"]:
                         label = "Frequent Itemset"
 
 
-                    plt.plot(range(0, len(data["time"])), data["time"], "-o", label=label)
+                    l, = plt.plot(range(0, len(data["time"])), data["time"], "-o", label=label)
+                    if (len(total_lines) < 3):
+                        total_lines.append(l)
 
-            plt.legend()
             plt.xticks(np.arange(0, 6), ("1", "0.75", "0.5", "0.33", "0.25", "0.2"))
-            plt.tight_layout()
-
+plt.figlegend(total_lines, ("Prefix Span (J=1)", "Prefix Span (J=0.7)", "FP-Growth"), "lower center", ncol=3)
+plt.tight_layout()
 plt.show()
